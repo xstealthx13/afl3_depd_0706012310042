@@ -73,4 +73,77 @@ class HomeRepository {
 
     return data.map((e) => Costs.fromJson(e)).toList();
   }
+    // ===============================================================
+  // 1. Get International Country List
+  // Endpoint: destination/country
+  // ===============================================================
+  Future<List<dynamic>> fetchCountryList() async {
+    final response =
+        await _apiServices.getApiResponse('destination/country');
+
+    // Validate meta status
+    final meta = response['meta'];
+    if (meta == null || meta['status'] != 'success') {
+      throw Exception("API Error: ${meta?['message'] ?? 'Unknown error'}");
+    }
+
+    final data = response['data'];
+    if (data is! List) return [];
+
+    return data; // raw List<Map>
+  }
+
+  // ===============================================================
+  // 2. Get International Cities by Country ID
+  // Endpoint: destination/international-city/:countryId
+  // ===============================================================
+  Future<List<dynamic>> fetchInternationalCityList(int countryId) async {
+    final response = await _apiServices.getApiResponse(
+      'destination/international-city/$countryId',
+    );
+
+    // Validate meta
+    final meta = response['meta'];
+    if (meta == null || meta['status'] != 'success') {
+      throw Exception("API Error: ${meta?['message'] ?? 'Unknown error'}");
+    }
+
+    final data = response['data'];
+    if (data is! List) return [];
+
+    return data; // raw List<Map>
+  }
+
+  // ===============================================================
+  // 3. Calculate International Shipping Cost
+  // Endpoint: calculate/international-cost
+  // ===============================================================
+  Future<List<dynamic>> fetchInternationalCost({
+    required int countryId,
+    required int cityId,
+    required int weight,
+    required String courier,
+  }) async {
+    final response = await _apiServices.postApiResponse(
+      'calculate/international-cost',
+      {
+        "destination_country": countryId.toString(),
+        "destination_city": cityId.toString(),
+        "weight": weight.toString(),
+        "courier": courier
+      },
+    );
+
+    // Validate meta status
+    final meta = response['meta'];
+    if (meta == null || meta['status'] != 'success') {
+      throw Exception("API Error: ${meta?['message'] ?? 'Unknown error'}");
+    }
+
+    final data = response['data'];
+    if (data is! List) return [];
+
+    return data; // raw List<Map>
+  }
+
 }
