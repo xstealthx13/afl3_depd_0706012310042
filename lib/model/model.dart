@@ -4,3 +4,4 @@ part 'province.dart';
 
 part 'city.dart';
 part 'costs.dart';
+part 'country.dart';
